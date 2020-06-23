@@ -1,0 +1,91 @@
+" ;-----------------------------------------------------------------------------
+" ; Local VIM Project Configuration File
+" ;-----------------------------------------------------------------------------
+
+" ;-----------------------------------------------------------------------------
+" ; Project Settings
+" ;-----------------------------------------------------------------------------
+let g:vix_current_project.root = g:localvimrc_script_dir
+let g:vix_current_project.name = 'plot-data'
+
+" ;-----------------------------------------------------------------------------
+" ; Build (tmux/shell).
+" ;-----------------------------------------------------------------------------
+let g:vix_current_project.command.build.prefix =
+\ 'echo "{prefix} No <build> rules defined." &&'
+let g:vix_current_project.command.build.body =
+\ 'echo "{body} No <build> rules defined." &&'
+let g:vix_current_project.command.build.postfix =
+\ 'echo "{postfix} No <build> rules defined."'
+
+" ;-----------------------------------------------------------------------------
+" ; Make (tmux/shell).
+" ;-----------------------------------------------------------------------------
+let g:vix_current_project.command.make.prefix =
+\ 'echo "{prefix} No <make> rules defined." &&'
+let g:vix_current_project.command.make.body =
+\ 'echo "{prefix} No <make> rules defined." &&'
+let g:vix_current_project.command.make.postfix =
+\ 'echo "{prefix} No <make> rules defined."'
+
+" ;-----------------------------------------------------------------------------
+" ; Run (tmux/shell).
+" ;-----------------------------------------------------------------------------
+let g:vix_current_project.command.run.prefix =
+\ 'cd' . ' ' . g:vix_current_project.root . ';'
+let g:vix_current_project.command.run.body =
+\ '/Library/Frameworks/Python.framework/Versions/2.7/bin/python ./' . g:vix_current_project.name .'.py;'
+let g:vix_current_project.command.run.postfix =
+\ 'cd' . ' ' . g:vix_current_project.root
+
+" ;-----------------------------------------------------------------------------
+" ; Make (vim-dispatch)
+" ;-----------------------------------------------------------------------------
+" First check for a "make.sh" script.
+if filereadable(g:vix_current_project.root . '/make.sh')
+let g:vix_current_project.dispatch.make.args = 'cd ' .
+\ g:vix_current_project.root . '; ' . './make.sh'
+" If the "make.sh" is not present, continue with the internal call.
+else
+let g:vix_current_project.dispatch.make.args =
+\ 'cd' . ' ' . g:localvimrc_script_dir . '/build && make'
+endif
+
+" ;-----------------------------------------------------------------------------
+" ; Build (vim-dispatch)
+" ;-----------------------------------------------------------------------------
+" First check for a "build.sh" script.
+if filereadable(g:vix_current_project.root . '/build.sh')
+let g:vix_current_project.dispatch.build.args = 'cd ' .
+\ g:vix_current_project.root . '; ' . './build.sh'
+" If the "build.sh" is not present, continue with the internal call.
+else
+let g:vix_current_project.dispatch.build.args =
+\ 'cd ' . g:vix_current_project.root . '; ' .
+\ 'rm -rf ./build/*; cd ./build; cmake ..; cp compile_commands.json ../; ' .
+                   \ 'cd ' . g:vix_current_project.root
+                   endif
+
+" ;-----------------------------------------------------------------------------
+" ; Clear (vim-dispatch)
+" ;-----------------------------------------------------------------------------
+" TODO: Implement Clear (vim-dispatch)
+" Should clear the target bin/lib folder after the run.
+" But NOT before the next make, maybe the previos make did not work?!
+" Also implement checks for the targets? If target not present do not run?
+" We need target locations then to be passed to the internal call?
+" Like, for instance what is to be run? 
+
+" ;-----------------------------------------------------------------------------
+" ; Run (vim-dispatch)
+" ;-----------------------------------------------------------------------------
+" First check for a "run.sh" script.
+if filereadable(g:vix_current_project.root . '/run.sh')
+    let g:vix_current_project.dispatch.run.args = 'cd ' .
+                \ g:vix_current_project.root . '; ' . './run.sh'
+    " If the "run.sh" is not present, continue with the internal call.
+else
+    let g:vix_current_project.dispatch.run.args = '/Library/Frameworks/Python.framework/Versions/2.7/bin/python' . ' ' . g:vix_current_project.root
+                \ . '/' . g:vix_current_project.name . '.py'
+endif
+" vim: ft=vim
